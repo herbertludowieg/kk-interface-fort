@@ -1,0 +1,24 @@
+
+
+----------------------------------MAKEFILE NOTES-------------------------------------
+----REQUIREMENTS--------------------------
+    f2py (should come with numpy)
+    FORTRAN compiler (gfortran works well)
+------------------------------------------
+----MAKEFILE INSTRUCTIONS-----------------
+Before the program can be run the FORTRAN modules on the fortran_scripts directory
+must be compiled. A makefile has been included in the directory to compile all of the
+.f90 files contained in the directory into one file.
+
+1). Make sure that before running the Makefile lines 1,5-7 are uncommented and
+    all other are commented.
+2). Input the Python version that the program will run on in the variable VER (e.g.
+    for Python 2.7 input 2.7 for the value of VER)
+3). Enter the command, make, into the command line
+
+------------------------------------------
+Works equally with Python 2.x or 3.x just make sure to make the proper adjustments on
+the Makefile to the VER variable.
+
+
+

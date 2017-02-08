@@ -290,7 +290,7 @@ class Search_Data(tk.Frame):
 					'units':'','index':'0','mskk/cdkk':'none'}
 
 		selected_data['state'] = 'normal'
-		selected_data.insert('1.0','kk-inter\n\n'+ \
+		selected_data.insert('1.0','kk-interface-fort\n\n'+ \
 					'Copyright(C) 2016 Herbert Ludowieg\n\n'+ \
 					'This program comes with ABSOLUTELY\n'+ \
 					'NO WARRANTY; for details look\n'+ \

@@ -38,7 +38,7 @@ module kk_m_trans
       double precision, intent(out) :: transform(np,2)
    call itime(time)
    write(*,1001) time(1),time(2),time(3)
-1001 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
+1001 format ( 'PROCESS STARTED AT: ',I2.2,':',I2.2,':',I2.2)
       h = abs(points(1,1) - points(2,1))
       counter = 5
       do i=1,np
@@ -111,7 +111,7 @@ module kk_m_trans
       double precision, intent(out) :: transform(np,2)
    call itime(time)
    write(*,1000) time(1),time(2),time(3)
-1000 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
+1000 format ( 'PROCESS STARTED AT: ',I2.2,':',I2.2,':',I2.2)
       h = abs(points(1,1) - points(2,1))
       counter = 5
       do i=1,np

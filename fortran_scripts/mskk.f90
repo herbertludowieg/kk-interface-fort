@@ -43,7 +43,7 @@ module mskk
    double precision, intent(out) :: transform(np,2)
    call itime(time)
    write(*,1001) time(1),time(2),time(3)
-1001 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
+1001 format ( 'PROCESS STARTED AT: ',I2.2,':',I2.2,':',I2.2)
    h = abs(points(1,1)-points(2,1))
    if (wave.eq.0) then
       a = 1.0d0
@@ -146,7 +146,7 @@ module mskk
    double precision, intent(out) :: transform(np,2)
    call itime(time)
    write(*,1000) time(1),time(2),time(3)
-1000 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
+1000 format ( 'PROCESS STARTED AT: ',I2.2,':',I2.2,':',I2.2)
    h = abs(points(1,1)-points(2,1))
    if (wave.eq.0) then
       a = 1.0d0

@@ -30,7 +30,7 @@ module mskk
    integer :: i,j,k,l,m,time(3),counter,time_count(3),time_end(3)
    double precision :: rj, vi, vj, sum, fj, rtemp, phisum, phiprod, phiprod_sub, &
      & intprod, inner_intprod, outer_intprod, outer_intprod_sub, phi, h, a
-   double precision, parameter :: tiny = 1d-6, zero = 0d0, one = 1d0, two = 2d0, &
+   double precision, parameter :: tiny = 1d-10, zero = 0d0, one = 1d0, two = 2d0, &
      & pi = 3.1415926535897932385d0
 !=================================================================================
    

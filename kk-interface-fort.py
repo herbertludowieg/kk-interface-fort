@@ -355,7 +355,12 @@ class Search_Data(tk.Frame):
 						(int(settings.vardict['index']) * 50)
 		y = self.winfo_rooty() + (int(settings.vardict['index']) * 50) - 32
 		self.plot_win.geometry('+'+str(x)+'+'+str(y))
+#		self.plot_win.protocol('WM_DELETE_WINDOW',
+#							lambda:self.del_topwin(self.plot_win))
 		self.app = plot.Plots(self.plot_win,f[0],f[1],f[2],f[3])
+
+#	def del_topwin(self,parent):
+#		parent.destroy()
 	
 	# sets the properties of the toplevel window for the Help class
 	def help(self,arg):

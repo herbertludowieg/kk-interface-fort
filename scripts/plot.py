@@ -39,13 +39,13 @@ import numpy as np
 
 class Plots:
 	def __init__(self,parent,freq,orig,trans,method):
-		container = tk.Frame(parent, borderwidth=3)
-		container.pack(side=TOP, fill=BOTH, expand=True)
-		container.grid_rowconfigure(0, weight=1)
-		container.grid_columnconfigure(0, weight=1)
+		self.container = tk.Frame(parent, borderwidth=3)
+		self.container.pack(side=TOP, fill=BOTH, expand=True)
+		self.container.grid_rowconfigure(0, weight=1)
+		self.container.grid_columnconfigure(0, weight=1)
 		self.frames = {}
 		for i in (Single_Plot,Double_Plot):
-			frame = i(container,self,freq,orig,trans,method)
+			frame = i(self.container,self,freq,orig,trans,method)
 			self.frames[i] = frame
 			frame.grid(row=0, column=0, sticky=(N,W,E,S))
 		self.show_frame(Single_Plot)
@@ -69,7 +69,7 @@ class Plots:
 		else:
 			return
 
-class Single_Plot(tk.Frame):
+class Single_Plot(tk.Frame,Plots):
 	def __init__(self,parent,controller,freq,orig,trans,method):
 		tk.Frame.__init__(self,parent)
 		self.t_index = StringVar()

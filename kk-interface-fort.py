@@ -45,6 +45,8 @@ import sys
 
 # checks if the import file kktransform based on the system being used
 # if there is an error it will give an error message and quit the application
+import matplotlib
+matplotlib.use("Agg")
 if len(sys.argv) > 1:
 	if sys.argv[1] == '-h':
 		op_text = '-----COMMAND LINE OPTIONS------------------\n'+ \

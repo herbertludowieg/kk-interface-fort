@@ -32,45 +32,56 @@ elif sys.version[0][0] == '2':
 	import tkMessageBox as messagebox
 	import ttk
 	import tkFileDialog as filedialog
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import AutoMinorLocator
+import matplotlib.pyplot as plt
 import numpy as np
+import gc
+
 
 class Plots:
 	def __init__(self,parent,freq,orig,trans,method):
-		self.container = tk.Frame(parent, borderwidth=3)
+		self.parent = parent
+		self.container = tk.Frame(self.parent, borderwidth=3)
 		self.container.pack(side=TOP, fill=BOTH, expand=True)
 		self.container.grid_rowconfigure(0, weight=1)
 		self.container.grid_columnconfigure(0, weight=1)
 		self.frames = {}
 		for i in (Single_Plot,Double_Plot):
-			frame = i(self.container,self,freq,orig,trans,method)
+			frame = i(self.container,self,freq,orig,trans,method,parent)
 			self.frames[i] = frame
 			frame.grid(row=0, column=0, sticky=(N,W,E,S))
 		self.show_frame(Single_Plot)
 		self.t_index = IntVar()
 		self.t_index.set(int(settings.vardict['index']))
 		lbl = tk.Label(frame, textvariable = self.t_index)
-		parent.protocol('WM_DELETE_WINDOW',
-				lambda:self.close(parent,freq,orig,trans))
+		#parent.protocol('WM_DELETE_WINDOW',self.close)
 
 	def show_frame(self,cont):
 		frame = self.frames[cont]
 		frame.tkraise()
 	
-	def close(self,parent,freq,orig,trans):
+	def close(self,parent,fig,other):
 		close_text='Data for plot will be erased.\nWish to close window?'
 		dialog = messagebox.askyesno(title='Close Data Plot',
 						icon='question',message=close_text)
 		if dialog != 0:
-			settings.position[self.t_index.get()] = 0
-			parent.destroy()
+			gc.collect()
+			print gc.garbage
+			settings.position[int(self.t_index.get())] = 0
+			fig.clf()
+			other.clear()
+			plt.close('all')
+			#parent.destroy()
+			print gc.garbage
 		else:
 			return
 
 class Single_Plot(tk.Frame,Plots):
-	def __init__(self,parent,controller,freq,orig,trans,method):
+	def __init__(self,parent,controller,freq,orig,trans,method,mainparent):
 		tk.Frame.__init__(self,parent)
 		self.t_index = StringVar()
 		self.t_index.set(settings.vardict['index'])
@@ -160,7 +171,9 @@ class Single_Plot(tk.Frame,Plots):
 		self.t_data.grid(column=1,row=2,sticky=(W,E))
 		savegraph.grid	(column=1,row=3,sticky=(W,E))
 		sep.grid	(column=2,row=1,rowspan=25,sticky=(N,S),padx=3)
-
+		#mainparent.protocol('WM_DELETE_WINDOW',lambda:self.close(a,mainparent))
+		controller.parent.protocol('WM_DELETE_WINDOW',
+				lambda:self.close(mainparent,f,a))
 	# creates a textbox on the same window as the graph on the right column
 	def trans_data(self,freq,trans):
 		self.savelbl =  StringVar()
@@ -253,8 +266,8 @@ class Single_Plot(tk.Frame,Plots):
 			return
 
 
-class Double_Plot(tk.Frame):
-	def __init__(self, parent, controller,freq,orig,trans,method):
+class Double_Plot(tk.Frame,Plots):
+	def __init__(self, parent, controller,freq,orig,trans,method,mainparent):
 		tk.Frame.__init__(self, parent)
 
 		# keeps track of which data goes with which graph
@@ -374,7 +387,10 @@ class Double_Plot(tk.Frame):
 		self.t_data.grid(column=1,row=2,sticky=(W,E))
 		savegraph.grid	(column=1,row=3,sticky=(W,E))
 		sep.grid	(column=2,row=1,rowspan=25,sticky=(N,S),padx=3)
-
+	#	mainparent.protocol('WM_DELETE_WINDOW',lambda:controller.close(f))
+		#f.clf()
+		#a.clear()
+		#b.clear()
 	# creates a textbox on the same window as the graph on the right column
 	def trans_data(self,freq,trans):
 		self.savelbl =  StringVar()
@@ -410,7 +426,8 @@ class Double_Plot(tk.Frame):
 		self.t_data['text'] = 'Hide Transformed\nData'
 		self.t_data['command'] = lambda:self.hide_trans(save_btn,text_scroll, \
 							data_sep,freq,trans)
-	
+		a.clear()
+		b.clear()
 	# destroys all of the widgets associated with the textbox for the 
 	# transformed data
 	def hide_trans(self,save_btn,text_scroll,data_sep,freq,trans):

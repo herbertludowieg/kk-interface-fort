@@ -39,21 +39,32 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import AutoMinorLocator
 import matplotlib.pyplot as plt
 import numpy as np
-import gc
+
+
+f = Figure(figsize = (9.75,5), dpi = 75)
+a = f.add_subplot(111)
 
 
 class Plots:
 	def __init__(self,parent,freq,orig,trans,method):
 		self.parent = parent
+		self.method = method
+		self.freq = freq
+		self.trans = trans
+		self.orig = orig
+		del freq
+		del orig
+		del trans
 		self.container = tk.Frame(self.parent, borderwidth=3)
 		self.container.pack(side=TOP, fill=BOTH, expand=True)
 		self.container.grid_rowconfigure(0, weight=1)
 		self.container.grid_columnconfigure(0, weight=1)
 		self.frames = {}
-		for i in (Single_Plot,Double_Plot):
-			frame = i(self.container,self,freq,orig,trans,method,parent)
-			self.frames[i] = frame
-			frame.grid(row=0, column=0, sticky=(N,W,E,S))
+		#for i in (Single_Plot):
+		frame = Single_Plot(self.container,self)
+		self.frames[Single_Plot] = frame
+		frame.grid(row=0, column=0, sticky=(N,W,E,S))
+
 		self.show_frame(Single_Plot)
 		self.t_index = IntVar()
 		self.t_index.set(int(settings.vardict['index']))
@@ -64,47 +75,47 @@ class Plots:
 		frame = self.frames[cont]
 		frame.tkraise()
 	
-	def close(self,parent,fig,other):
+	def close(self,parent):
 		close_text='Data for plot will be erased.\nWish to close window?'
 		dialog = messagebox.askyesno(title='Close Data Plot',
 						icon='question',message=close_text)
 		if dialog != 0:
-			gc.collect()
-			print gc.garbage
+			#gc.collect()
+			#print gc.garbage
 			settings.position[int(self.t_index.get())] = 0
-			fig.clf()
-			other.clear()
-			plt.close('all')
-			#parent.destroy()
-			print gc.garbage
+			#f.clf()
+			a.clear()
+			plt.close(f)
+			parent.destroy()
+			#print gc.garbage
 		else:
 			return
 
 class Single_Plot(tk.Frame,Plots):
-	def __init__(self,parent,controller,freq,orig,trans,method,mainparent):
+	def __init__(self,parent,controller):
 		tk.Frame.__init__(self,parent)
 		self.t_index = StringVar()
 		self.t_index.set(settings.vardict['index'])
 
-		f = Figure(figsize = (9.75,5), dpi = 75)
-		a = f.add_subplot(111)
-		freq_i = np.zeros(len(freq))
-		orig_i = np.zeros(len(freq))
-		trans_i = np.zeros(len(freq))
-		for i in range(len(freq)):
-			freq_i[i] = freq[i]
-			orig_i[i] = orig[i]
-			trans_i[i] = trans[i]
+#		f = Figure(figsize = (9.75,5), dpi = 75)
+		#a = f.add_subplot(111)
+		#freq_i = np.zeros(len(freq))
+		#orig_i = np.zeros(len(freq))
+		#trans_i = np.zeros(len(freq))
+		#for i in range(len(freq)):
+		#	freq_i[i] = freq[i]
+		#	orig_i[i] = orig[i]
+		#	trans_i[i] = trans[i]
 
 		if settings.vardict['real'] == 'Dispersive':
-			funct = 'Reverse '+method+' transform'
-			a.plot(freq_i,orig_i,'-r',label='Disp.')
-			a.plot(freq_i,trans_i,'-b',label='Abs.')
+			funct = 'Reverse '+controller.method+' transform'
+			a.plot(controller.freq,controller.orig,'-r',label='Disp.')
+			a.plot(controller.freq,controller.trans,'-b',label='Abs.')
 		else:
-			funct = method+' transform'
-			a.plot(freq_i,trans_i,'-r',label='Disp.')
-			a.plot(freq_i,orig_i,'-b',label='Abs.')
-		if method != 'KK':
+			funct = controller.method+' transform'
+			a.plot(controller.freq,controller.trans,'-r',label='Disp.')
+			a.plot(controller.freq,controller.orig,'-b',label='Abs.')
+		if controller.method != 'KK':
 			mskk_text = ' with '+settings.vardict['numanchor']+ \
 								' anchor points'
 			ancfreq = []
@@ -140,7 +151,7 @@ class Single_Plot(tk.Frame,Plots):
 
 		# checks to see if it is necessary to change the y-axis to
 		# scientific notation
-		if max(orig_i) >= 1000 or max(trans_i) >= 1000:
+		if max(controller.orig) >= 1000 or max(controller.trans) >= 1000:
 			a.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
 		f.set_tight_layout(True)
 
@@ -162,7 +173,7 @@ class Single_Plot(tk.Frame,Plots):
 		btn['command']=lambda:controller.show_frame(Double_Plot)
 		lbl = tk.Label(self, textvariable = self.t_index)
 		self.t_data = tk.Button(self, text = 'Show Transformed\nData',
-				command=lambda:self.trans_data(freq_i,trans_i))
+				command=lambda:self.trans_data(controller.freq,controller.trans))
 		savegraph = tk.Button(self,text='Save graph',
 					command=lambda:self.save_graph(f))
 		sep = ttk.Separator(self, orient=VERTICAL)
@@ -173,7 +184,7 @@ class Single_Plot(tk.Frame,Plots):
 		sep.grid	(column=2,row=1,rowspan=25,sticky=(N,S),padx=3)
 		#mainparent.protocol('WM_DELETE_WINDOW',lambda:self.close(a,mainparent))
 		controller.parent.protocol('WM_DELETE_WINDOW',
-				lambda:self.close(mainparent,f,a))
+				lambda:self.close(controller.parent))
 	# creates a textbox on the same window as the graph on the right column
 	def trans_data(self,freq,trans):
 		self.savelbl =  StringVar()

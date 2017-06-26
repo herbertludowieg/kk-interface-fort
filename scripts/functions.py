@@ -81,13 +81,14 @@ def search_data(selected_data,exec_btn,lbl_open,check_space,plot_dat_btn,gskk_bt
 		check_space['state'] = 'normal'
 		plot_dat_btn['state'] = 'normal'
 		gskk_btn['state'] = 'normal'
-		
+
 		settings.vardict['openf'] = openf
 		settings.vardict['fnlist'] = fnlist[-1]
-#		if data_log.get('1.0','1.1') != '>>':
-#			data_log['state'] = 'normal'
-#			data_log.delete('1.0',END)
-#			data_log['state'] = 'disabled'
+		print data_log.get('1.0','1.2')
+		if data_log.get('1.0','1.2') != '>>':
+			data_log['state'] = 'normal'
+			data_log.delete('1.0',END)
+			data_log['state'] = 'disabled'
 	return
 
 def spacing_check(points,data_log):

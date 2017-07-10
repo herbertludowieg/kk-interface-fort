@@ -84,7 +84,7 @@ def search_data(selected_data,exec_btn,lbl_open,check_space,plot_dat_btn,gskk_bt
 
 		settings.vardict['openf'] = openf
 		settings.vardict['fnlist'] = fnlist[-1]
-		print data_log.get('1.0','1.2')
+		print("Opened file "+openf)
 		if data_log.get('1.0','1.2') != '>>':
 			data_log['state'] = 'normal'
 			data_log.delete('1.0',END)
@@ -155,6 +155,8 @@ def main(data_log,method):
 	length = int(len(points))
 
 	# checks which transformation method to use
+	# writes to a text box the method utilized and on which data set
+	# it was applied
 	if settings.vardict['real'] == 'Dispersive':
 		if method == 'KK':
 			f = methods.kk_m_trans.kkreversemaclaurin(w,points,length)
@@ -202,6 +204,7 @@ def main(data_log,method):
 				'use of anchor points performed on '+ \
 				filen+w_text+' (taken from '+ \
 				settings.vardict['openf']+')\n'
+
 	# writes method applied to log for reference
 	data_log['state']='normal'
 	data_log.insert('1.0',text)	

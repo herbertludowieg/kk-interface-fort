@@ -39,6 +39,7 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import AutoMinorLocator
 import matplotlib.pyplot as plt
 import numpy as np
+import gc
 
 
 f = Figure(figsize = (9.75,5), dpi = 75)
@@ -64,22 +65,32 @@ class Plots:
 		self.container.grid_rowconfigure(0, weight=1)
 		self.container.grid_columnconfigure(0, weight=1)
 		self.frames = {}
-		for i in (Single_Plot,Double_Plot):
-			frame = i(self.container,self)
-			self.frames[i] = frame
-			frame.grid(row=0, column=0, sticky=(N,W,E,S))
-
-		self.show_frame(Single_Plot)
+		frame = Single_Plot(self.container,self)
+		self.frames[Single_Plot] = frame
+		frame.grid(row=0, column=0, sticky=(N,W,E,S))
+		#for i in (Single_Plot,Double_Plot):
+		#	frame = i(self.container,self)
+		#	self.frames[i] = frame
+		#	frame.grid(row=0, column=0, sticky=(N,W,E,S))
+		
 		self.t_index = IntVar()
 		self.t_index.set(int(settings.vardict['index']))
 		lbl = tk.Label(frame, textvariable = self.t_index)
+		#self.savelbl = StringVar()
+		#self.text_disp = ""
+		#self.save_btn = ""
+		#self.text_scroll = ""
+		#self.data_sep = ""
+		#self.savelbl.set('Save Data')
+		self.show_frame(Single_Plot)
+
 		#parent.protocol('WM_DELETE_WINDOW',self.close)
 
 	def show_frame(self,cont):
 		frame = self.frames[cont]
 		frame.tkraise()
 	
-	def close(self,parent):
+	def close(self,parent,cont):
 		close_text='Data for plot will be erased.\nWish to close window?'
 		dialog = messagebox.askyesno(title='Close Data Plot',
 						icon='question',message=close_text)
@@ -89,12 +100,106 @@ class Plots:
 			settings.position[int(self.t_index.get())] = 0
 			#f.clf()
 			a.clear()
-			plt.close(f)
+			f.clf()
 			b.clear()
 			c.clear()
-			plt.close(v)
+			f.clf()
+			del cont.freq
+			del cont.trans
+			del cont.orig
 			parent.destroy()
+			gc.collect()
 			#print gc.garbage
+		else:
+			return
+
+	# creates a textbox on the same window as the graph on the right column
+	def trans_data(self,t_data):
+		self.savelbl =  StringVar()
+		self.text_disp =Text(self.container, width = 30, height = 24, state='normal')
+		self.save_btn = tk.Button(self.container, textvariable=self.savelbl,
+						command=self.save_data)
+		self.text_scroll =   tk.Scrollbar(self.container, orient=VERTICAL,
+						command=self.text_disp.yview)
+		self.text_disp['yscrollcommand'] = self.text_scroll.set
+		self.data_sep = 	ttk.Separator(self.container, orient=VERTICAL)
+		#self.save_btn['textvariable']=self.savelbl
+		self.save_btn.grid		(column=1, row=4, sticky=(W,E))
+		self.data_sep.grid		(column=4, row=1, rowspan=25, 
+							sticky=(N,S), padx=3)
+		self.text_disp.grid	(column=5, row=1, rowspan=25,sticky=(N,W,E,S))
+		self.text_scroll.grid	(column=6, row=1, rowspan=25,sticky=(N,S))
+		
+		self.savelbl.set('Save Data')
+
+                # writes the transformed data to the textbox on the window
+		for i in range(len(self.freq)):
+			self.text_disp.insert(str(i+1)+'.0', \
+				str(self.freq[i])+'\t')
+			if i == len(self.freq)-1:
+				self.text_disp.insert(str(i+1)+'.15', \
+					str(self.trans[i]))
+			else:
+				self.text_disp.insert(str(i+1)+'.15', \
+					str(self.trans[i])+'\n')
+		self.text_disp['state'] = 'disabled'
+		t_data['text'] = 'Hide Transformed\nData'
+		t_data['command'] = lambda:self.hide_trans(t_data)
+
+	# destroys all of the widgets associated with the textbox for the 
+	# transformed data	
+	def hide_trans(self,t_data):
+		self.text_disp.destroy()
+		self.save_btn.destroy()
+		self.text_scroll.destroy()
+		self.data_sep.destroy()
+		t_data['text'] = 'Show Transformed\nData'
+		t_data['command'] = lambda:self.trans_data(t_data)
+
+	# saves the transformed data
+	def save_data (self):
+		filename = filedialog.asksaveasfilename(filetypes = (('omega files'
+									,'.omega'),
+						('lambda files','.lambda'),
+						('txt files','.txt'),
+						('all files','.*')))
+		if len(filename) > 0:
+			infile = open(filename, 'w')
+			infile.write(self.text_disp.get('1.0',END))
+			infile.close()
+			self.savelbl.set('Data Saved')
+		else:
+			return
+
+	# saves the graph
+	# checks that the save file is a specific format for the savefig command
+	# to be able to save the plot
+	def save_graph(self,graph):
+		filename = filedialog.asksaveasfilename(filetypes = (('eps','.eps'),
+						('jpeg','.jpeg'),('jpg','.jpg'),
+						('pdf','.pdf'),('pgf','.pgf'),
+						('png','.png'),('ps','.ps'),
+						('raw','.raw'),('rgba','.rgba'),
+						('svg','.svg'),('svgz','.svgz'),
+						('tif','.tif'),('tiff','.tiff')))
+		matplotfile = ['eps','jpeg','jpg','pdf','pgf','png','ps','raw', \
+						'rgba','svg','svgz','tif','tiff']
+		if len(filename) > 0:
+			fileext = filename.split('.')
+			for i in matplotfile:
+				if fileext[1] == i:
+					break
+				elif i == matplotfile[-1]:
+					fileformat=matplotfile[0]
+					for l in matplotfile[1:]:
+						fileformat=fileformat+', '+l
+					messagebox.showwarning(title='File format',
+					message='Unsupported file format for'+ \
+						' graph. Please use one of '+ \
+						'following formats:\n'+ \
+								fileformat)
+					return
+			graph.savefig(filename)
 		else:
 			return
 
@@ -168,7 +273,7 @@ class Single_Plot(tk.Frame,Plots):
 
 		# linking the matplotlib graph to the tk canvas to be shown
 		# on the window
-		canvas = FigureCanvasTkAgg(f, self)
+		canvas = FigureCanvasTkAgg(f, parent)
 		canvas.show()
 		canvas.get_tk_widget().grid	(column=3,row=1,rowspan=25,
 								sticky=(N,W,E,S))
@@ -180,112 +285,28 @@ class Single_Plot(tk.Frame,Plots):
 
 		# button for easy navigation of plots and initializing
 		# trans_data subroutine
-		btn = tk.Button(self, text = 'Separate Plots')
-		btn['command']=lambda:controller.show_frame(Double_Plot)
-		lbl = tk.Label(self, textvariable = self.t_index)
-		self.t_data = tk.Button(self, text = 'Show Transformed\nData',
-				command=lambda:self.trans_data(controller.freq,controller.trans))
-		savegraph = tk.Button(self,text='Save graph',
+		#controller.text_disp =Text(self, width = 30, height = 24, state='normal')
+		#controller.save_btn = tk.Button(self,command=self.save_data)
+		#controller.text_scroll =   tk.Scrollbar(self, orient=VERTICAL,
+		#				command=controller.text_disp.yview)
+		#controller.text_disp['yscrollcommand'] = controller.text_scroll.set
+		#controller.data_sep = 	ttk.Separator(self, orient=VERTICAL)
+#		btn = tk.Button(parent, text = 'Separate Plots')
+#		btn['command']=lambda:controller.show_frame(Double_Plot)
+		lbl = tk.Label(parent, textvariable = self.t_index)
+		t_data = tk.Button(parent, text = 'Show Transformed\nData',
+				command=lambda:controller.trans_data(t_data))
+		savegraph = tk.Button(parent,text='Save graph',
 					command=lambda:self.save_graph(f))
-		sep = ttk.Separator(self, orient=VERTICAL)
+		sep = ttk.Separator(parent, orient=VERTICAL)
 		
-		btn.grid	(column=1,row=1,sticky=(W,E))
-		self.t_data.grid(column=1,row=2,sticky=(W,E))
-		savegraph.grid	(column=1,row=3,sticky=(W,E))
+#		btn.grid	(column=1,row=1,sticky=(W,E))
+		t_data.grid(column=1,row=1,sticky=(W,E))
+		savegraph.grid	(column=1,row=2,sticky=(W,E))
 		sep.grid	(column=2,row=1,rowspan=25,sticky=(N,S),padx=3)
 		#mainparent.protocol('WM_DELETE_WINDOW',lambda:self.close(a,mainparent))
 		controller.parent.protocol('WM_DELETE_WINDOW',
-				lambda:self.close(controller.parent))
-	# creates a textbox on the same window as the graph on the right column
-	def trans_data(self,freq,trans):
-		self.savelbl =  StringVar()
-		self.text_disp =Text(self, width = 30, height = 24, state='normal')
-		save_btn =      tk.Button(self, textvariable=self.savelbl,
-						command=self.save_data)
-		text_scroll =   tk.Scrollbar(self, orient=VERTICAL,
-						command=self.text_disp.yview)
-		self.text_disp['yscrollcommand'] = text_scroll.set
-		data_sep = 	ttk.Separator(self, orient=VERTICAL)
-
-		save_btn.grid		(column=1, row=4, sticky=(W,E))
-		data_sep.grid		(column=4, row=1, rowspan=25, 
-							sticky=(N,S), padx=3)
-		self.text_disp.grid	(column=5, row=1, rowspan=25,sticky=(N,W,E,S))
-		text_scroll.grid	(column=6, row=1, rowspan=25,sticky=(N,S))
-		
-		self.savelbl.set('Save Data')
-
-                # writes the transformed data to the textbox on the window
-		for i in range(len(freq)):
-			self.text_disp.insert(str(i+1)+'.0', \
-				str(freq[i])+'\t')
-			if i == len(freq)-1:
-				self.text_disp.insert(str(i+1)+'.15', \
-					str(trans[i]))
-			else:
-				self.text_disp.insert(str(i+1)+'.15', \
-					str(trans[i])+'\n')
-		self.text_disp['state'] = 'disabled'
-		self.t_data['text'] = 'Hide Transformed\nData'
-		self.t_data['command'] = lambda:self.hide_trans(save_btn,text_scroll, \
-							data_sep,freq,trans)
-
-	# destroys all of the widgets associated with the textbox for the 
-	# transformed data	
-	def hide_trans(self,save_btn,text_scroll,data_sep,freq,trans):
-		self.text_disp.destroy()
-		save_btn.destroy()
-		text_scroll.destroy()
-		data_sep.destroy()
-		self.t_data['text'] = 'Show Transformed\nData'
-		self.t_data['command'] = lambda:self.trans_data(freq,trans)
-
-	# saves the transformed data
-	def save_data (self):
-		filename = filedialog.asksaveasfilename(filetypes = (('omega files'
-									,'.omega'),
-						('lambda files','.lambda'),
-						('txt files','.txt'),
-						('all files','.*')))
-		if len(filename) > 0:
-			infile = open(filename, 'w')
-			infile.write(self.text_disp.get('1.0',END))
-			infile.close()
-			self.savelbl.set('Data Saved')
-		else:
-			return
-
-	# saves the graph
-	# checks that the save file is a specific format for the savefig command
-	# to be able to save the plot
-	def save_graph(self,graph):
-		filename = filedialog.asksaveasfilename(filetypes = (('eps','.eps'),
-						('jpeg','.jpeg'),('jpg','.jpg'),
-						('pdf','.pdf'),('pgf','.pgf'),
-						('png','.png'),('ps','.ps'),
-						('raw','.raw'),('rgba','.rgba'),
-						('svg','.svg'),('svgz','.svgz'),
-						('tif','.tif'),('tiff','.tiff')))
-		matplotfile = ['eps','jpeg','jpg','pdf','pgf','png','ps','raw', \
-						'rgba','svg','svgz','tif','tiff']
-		if len(filename) > 0:
-			fileext = filename.split('.')
-			for i in matplotfile:
-				if fileext[1] == i:
-					break
-				elif i == matplotfile[-1]:
-					fileformat=matplotfile[0]
-					for l in matplotfile[1:]:
-						fileformat=fileformat+', '+l
-					messagebox.showwarning(title='File format',
-					message='Unsupported file format for'+ \
-						' graph. Please use one of '+ \
-						'following formats:\n'+ \
-								fileformat)
-					return
-			graph.savefig(filename)
-		else:
-			return
+				lambda:self.close(controller.parent,controller))
 
 
 class Double_Plot(tk.Frame,Plots):
@@ -388,7 +409,7 @@ class Double_Plot(tk.Frame,Plots):
 
 		# linking the matplotlib graph to the tk canvas to be shown
 		# on the window
-		canvas = FigureCanvasTkAgg(v, self)
+		canvas = FigureCanvasTkAgg(v, parent)
 		canvas.show()
 		canvas.get_tk_widget().grid	(column=3,row=1,rowspan=25,
 								sticky=(N,W,E,S))
@@ -400,113 +421,17 @@ class Double_Plot(tk.Frame,Plots):
 
 		# button for easy navigation of plots and initializing
 		# trans_data subroutine
-		btn = tk.Button(self, text = 'Single Plot')
+		btn = tk.Button(parent, text = 'Single Plot')
 		btn['command']=lambda:controller.show_frame(Single_Plot)
-		lbl = tk.Label(self, textvariable = self.t_index)
-		self.t_data = tk.Button(self, text = 'Show Transformed\nData',
-				command=self.trans_data)
-		savegraph = tk.Button(self,text='Save graph',
+		lbl = tk.Label(parent, textvariable = self.t_index)
+		t_data = tk.Button(parent, text = 'Show Transformed\nData',
+				command=lambda:controller.trans_data(t_data))
+		savegraph = tk.Button(parent,text='Save graph',
 					command=lambda:self.save_graph(v))
-		sep = ttk.Separator(self, orient=VERTICAL)
+		sep = ttk.Separator(parent, orient=VERTICAL)
 		
 		btn.grid	(column=1,row=1,sticky=(W,E))
-		self.t_data.grid(column=1,row=2,sticky=(W,E))
+		t_data.grid(column=1,row=2,sticky=(W,E))
 		savegraph.grid	(column=1,row=3,sticky=(W,E))
 		sep.grid	(column=2,row=1,rowspan=25,sticky=(N,S),padx=3)
-	#	mainparent.protocol('WM_DELETE_WINDOW',lambda:controller.close(f))
-		#f.clf()
-		#a.clear()
-		#b.clear()
-	# creates a textbox on the same window as the graph on the right column
-	def trans_data(self):
-		self.savelbl =  StringVar()
-		self.text_disp =Text(self, width = 30, height = 24, state='normal')
-		save_btn =      tk.Button(self, textvariable=self.savelbl,
-						command=self.save_data)
-		text_scroll =   tk.Scrollbar(self, orient=VERTICAL,
-						command=self.text_disp.yview)
-		self.text_disp['yscrollcommand'] = text_scroll.set
-		data_sep = 	ttk.Separator(self, orient=VERTICAL)
-
-		save_btn.grid		(column=1, row=4, sticky=(W,E))
-		data_sep.grid		(column=4, row=1, rowspan=25, 
-								sticky=(N,S), padx=3)
-		self.text_disp.grid	(column=5, row=1, rowspan=25,sticky=(N,W,E,S))
-		text_scroll.grid	(column=6, row=1, rowspan=25,sticky=(N,S))
-
-		
-
-		self.savelbl.set('Save Data')
-
-                # writes the transformed data to the textbox on the window
-		for i in range(len(controller.freq)):
-			self.text_disp.insert(str(i+1)+'.0', \
-				str(controller.freq[i])+'\t')
-			if i == len(controller.freq)-1:
-				self.text_disp.insert(str(i+1)+'.15', \
-					str(controller.trans[i]))
-			else:
-				self.text_disp.insert(str(i+1)+'.15', \
-					str(controller.trans[i])+'\n')
-		self.text_disp['state'] = 'disabled'
-		self.t_data['text'] = 'Hide Transformed\nData'
-		self.t_data['command'] = lambda:self.hide_trans(save_btn,text_scroll, \
-							data_sep,controller.freq,controller.trans)
-
-	# destroys all of the widgets associated with the textbox for the 
-	# transformed data
-	def hide_trans(self,save_btn,text_scroll,data_sep,freq,trans):
-		self.text_disp.destroy()
-		save_btn.destroy()
-		text_scroll.destroy()
-		data_sep.destroy()
-		self.t_data['text'] = 'Show Transformed\nData'
-		self.t_data['command'] = lambda:self.trans_data(freq,trans)
-	
-	# saves the transformed data
-	def save_data (self):
-		filename = filedialog.asksaveasfilename(filetypes = (('omega files'
-									,'.omega'),
-						('lambda files','.lambda'),
-						('txt files','.txt'),
-						('all files','.*')))
-		if len(filename) > 0:
-			infile = open(filename, 'w')
-			infile.write(self.text_disp.get('1.0',END))
-			infile.close()
-			self.savelbl.set('Data Saved')
-		else:
-			return
-	
-	# saves the graph
-	# checks that the save file is a specific format for the savefig command
-	# to be able to save the plot
-	def save_graph(self,graph):
-		filename = filedialog.asksaveasfilename(filetypes = (('eps','.eps'),
-						('jpeg','.jpeg'),('jpg','.jpg'),
-						('pdf','.pdf'),('pgf','.pgf'),
-						('png','.png'),('ps','.ps'),
-						('raw','.raw'),('rgba','.rgba'),
-						('svg','.svg'),('svgz','.svgz'),
-						('tif','.tif'),('tiff','.tiff')))
-		matplotfile = ['eps','jpeg','jpg','pdf','pgf','png','ps','raw', \
-						'rgba','svg','svgz','tif','tiff']
-		if len(filename) > 0:
-			fileext = filename.split('.')
-			for i in matplotfile:
-				if fileext[1] == i:
-					break
-				elif i == matplotfile[-1]:
-					fileformat=matplotfile[0]
-					for l in matplotfile[1:]:
-						fileformat=fileformat+', '+l
-					messagebox.showwarning(title='File format',
-					message='Unsupported file format for'+ \
-						' graph. Please use one of '+ \
-						'following formats:\n'+ \
-								fileformat)
-					return
-			graph.savefig(filename)
-		else:
-			return
 

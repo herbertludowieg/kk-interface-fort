@@ -35,35 +35,11 @@ module cdkk_mod
     & phiprod_sub, intprod, inner_intprod, outer_intprod, outer_intprod_sub 
    double precision, parameter :: pi=3.1415926535897932385d0, zero = 0d0, &
                              & two = 2d0, tiny = 1d-6
-   double precision, allocatable :: anchors(:,:), temp(:)
+   double precision, allocatable :: anchors(:,:)
    integer, allocatable :: cdkkinter(:)
 !===========================================================================
 
    contains
-!   subroutine sort(anchorfile,na)
-!   double precision :: temp(3)
-!   return anchorfile
-!
-!   end subroutine
-!
-!   subroutine get_indices(points,anchors,na,np)
-!   double precision :: cdkkinter(na)
-!   do i=1,na
-!      do j=2,np+1,2
-!         if ( abs(points(j,1) - anchors(i,1)) <= tiny ) then
-!            cdkkinter(i) = j
-!            goto 200
-!         end if
-!      end do
-!      stop 'ERROR in difference calculation'
-!      200 continue
-!   end do
-!   cdkkinter(1) = 1
-!   cdkkinter(na) = np+1
-!   return cdkkinter
-!
-!   end subroutine
-
    subroutine cdkk(np,na,wave,points,anchorfile,transform)
 !variables from program=====================================================
    implicit none
@@ -74,7 +50,7 @@ module cdkk_mod
    call itime(time)
    write(*,1001) time(1),time(2),time(3)
 1001 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
-   allocate(cdkkinter(na),anchors(na,3),temp(3))
+   allocate(cdkkinter(na),anchors(na,3))
    h = abs(points(1,1) - points(2,1))
    if (wave == 1) then !changes sign if the variable is wavelike
       a = -1d0
@@ -160,9 +136,9 @@ module cdkk_mod
                outer_intprod = outer_intprod * outer_intprod_sub
             end do
             rtemp = (vi*vi - vj*vj)
-            !if (abs(rtemp) <= tiny) then
-            !   write(*,*) 'Division by zero', j,k,rtemp
-            !end if
+            if (abs(rtemp) <= tiny) then
+               write(*,*) 'Division by zero', j,k,rtemp
+            end if
             fj = (rj*vi) / (rtemp * intprod)
             sum = sum + fj
             k = k+2
@@ -283,9 +259,9 @@ module cdkk_mod
                outer_intprod = outer_intprod * outer_intprod_sub
             end do
             rtemp = (vi*vi - vj*vj)
-            !if (abs(rtemp) <= tiny) then
-            !   write(*,*) 'Division by zero', j,k,rtemp
-            !end if
+            if (abs(rtemp) <= tiny) then
+               write(*,*) 'Division by zero', j,k,rtemp
+            end if
             fj = (rj) / (rtemp * intprod)
             sum = sum + fj
             k = k+2

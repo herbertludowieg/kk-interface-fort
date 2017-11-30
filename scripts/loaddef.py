@@ -29,7 +29,6 @@ elif sys.version[0][0] == '2':
 	import Tkinter as tk
 	import tkMessageBox as messagebox
 	import ttk
-#import scripts.varoverwrite as varover
 from scripts import settings
 class LoadDefault:
 	def __init__(self,parent,default_name,real,wave,axis,units):
@@ -46,8 +45,6 @@ class LoadDefault:
 		infile = open('.default_settings','r')
 		all_list = infile.read().split(r'*')
 		infile.close()
-		#names_list = []
-		#setting_list = []
 		self.defsettings = {}
 		for i in range(0,len(all_list),2):
 			self.defsettings[all_list[i]] = all_list[i+1]

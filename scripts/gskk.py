@@ -230,7 +230,6 @@ class GSKK:
         self.switch_btn['state'] = 'normal'
         self.switch_btn['command'] = self.switch
         settings.anchorpoints = fittedanchors
-        #print(fittedanchors)
         settings.vardict['method'] = 'MSKK'
         self.savelbl.set('Using current anchors')
 

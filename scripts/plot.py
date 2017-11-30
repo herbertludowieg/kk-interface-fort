@@ -41,8 +41,6 @@ import numpy as np
 import gc
 
 
-#f = 
-#a = f.add_subplot(111)
 
 class Plots:
     def __init__(self,parent,freq,orig,trans,method):

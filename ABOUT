@@ -73,7 +73,7 @@ features.
 
 The CDKK method is a method that, as the name implies, only makes use of two anchor
 points in the transformation by calculating the transformation between the 
-[w_i:w_i+1] interval. This makes the transform behave more akin to a spline fit
+[w_i:w_{i+1}] interval. This makes the transform behave more akin to a spline fit
 polynomial as opposed to an Nth degree Lagrange Polynomial. As such this method does
 not require that the anchor points be placed at the specific Chebyshev zero-nodes.
 Rudolph and Autschbach compared the two methods and showed that by using 1.5 to 2 

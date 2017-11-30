@@ -13,26 +13,10 @@ Before the program can be run the FORTRAN modules on the fortran_scripts directo
 must be compiled. A makefile has been included in the directory to compile all of the
 .f90 files contained in the directory into one file.
 
-1). Make sure that before running the Makefile lines 1,11-13 are uncommented and
-    all other lines are commented.
-    As will be mentioned later this program is only compatible with Python 2.x on
-    Windows due to the need tocompile the .f90 files with f2py. If it is necessary
-    to run on Python 3.x a second program adapted singularly with Python code,
-    kk-interface-python.
+To compile the FORTRAN code simply run make on the windows CMD from the programs base 
+directory or the fortran_scripts directory. Python must be listed as a PATH variable 
+otherwise the code will not be able to compile.
 
-2). Enter the command, make, into the CMD.
-
-Additional Notes:
-Must be done from the CMD.
-
-If Python**\ and Python**\Scripts\ are not in PATH make sure to replace line 13 with
-the following,
-
-python.exe ***\Python**\Scripts\f2py.py -c $(FLAGS) -m $@ $^
-
-Where the '***' and '**' indicate extra directories and different versions 
-respectively. The line above should have a tab before the start of the line to align
-with the rules of make.
 ------------------------------------------
 ----MinGW installation--------------------
 If gfortran is not installed please do so using MinGW for which the download

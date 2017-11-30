@@ -40,9 +40,9 @@ module fit_data
       end do
    end do
    cddiff(:,n+1) = freq(:)
-   !do i=1,np
-   !   write(*,*) cddiff(i,:)
-   !end do
+!   do i=1,np
+!      write(*,*) cddiff(i,:)
+!   end do
    do j=1,n
       do k=1,np-1
          if (abs(cddiff(k,j)).lt.abs(cddiff(k+1,j))) then

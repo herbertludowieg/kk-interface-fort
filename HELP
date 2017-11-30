@@ -32,7 +32,7 @@ display both the transformed and the original input data.
 From this window the transformed data can be easily shown by selecting the 'Show
 Transformed Data' button which will create a textbox on the same window along with
 a save data button. This button can be used to save the data. The graph can be saved
-by using the save graph button. when this is selected this will only save the graph
+by using the save graph button. When this is selected this will only save the graph
 in one of the predetermined file formats as it is necessary for the savefig command.
 
 For more information about the program please refer to the ABOUT text.

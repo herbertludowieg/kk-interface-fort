@@ -27,47 +27,63 @@ module cdkk_mod
 !    You should have received a copy of the GNU General Public License
 !    along with kk-interface-fort.  If not, see <http://www.gnu.org/licenses/>.
 !
-!initialization of variables======================================================
+!initialization of variables================================================
    implicit none
    integer :: i,j,k,l,m,n,time(3),counter,time_count(3),time_end(3)
    real :: a
-   double precision :: sum,  vj, rj, vi, rtemp, fj, h, phi, phisum, phiprod, &
-      & phiprod_sub, intprod, inner_intprod, outer_intprod, outer_intprod_sub
-   double precision, parameter :: pi = 3.1415926535897932385d0, zero = 0d0, &
-                             & two = 2d0, tiny = 1d-10
-   double precision, allocatable :: anchors(:,:)
+   double precision :: sum,vj, rj, vi, rtemp, fj, h, phi, phisum, phiprod, &
+    & phiprod_sub, intprod, inner_intprod, outer_intprod, outer_intprod_sub 
+   double precision, parameter :: pi=3.1415926535897932385d0, zero = 0d0, &
+                             & two = 2d0, tiny = 1d-6
+   double precision, allocatable :: anchors(:,:), temp(:)
    integer, allocatable :: cdkkinter(:)
-!=================================================================================
+!===========================================================================
 
    contains
+!   subroutine sort(anchorfile,na)
+!   double precision :: temp(3)
+!   return anchorfile
+!
+!   end subroutine
+!
+!   subroutine get_indices(points,anchors,na,np)
+!   double precision :: cdkkinter(na)
+!   do i=1,na
+!      do j=2,np+1,2
+!         if ( abs(points(j,1) - anchors(i,1)) <= tiny ) then
+!            cdkkinter(i) = j
+!            goto 200
+!         end if
+!      end do
+!      stop 'ERROR in difference calculation'
+!      200 continue
+!   end do
+!   cdkkinter(1) = 1
+!   cdkkinter(na) = np+1
+!   return cdkkinter
+!
+!   end subroutine
+
    subroutine cdkk(np,na,wave,points,anchorfile,transform)
-!variables from program===========================================================
+!variables from program=====================================================
    implicit none
    integer, intent(in) :: np,na,wave
    double precision, intent(in) :: points(:,:), anchorfile(:,:)
    double precision, intent(out) :: transform(np,2)
-!assumes the chebyshev nodes inputted have been fitted to the data================
+!assumes the chebyshev nodes inputted have been fitted to the data==========
    call itime(time)
    write(*,1001) time(1),time(2),time(3)
 1001 format ( 'Process started at: ',I2.2,':',I2.2,':',I2.2)
-   allocate(cdkkinter(na),anchors(na,3))
+   allocate(cdkkinter(na),anchors(na,3),temp(3))
    h = abs(points(1,1) - points(2,1))
    if (wave == 1) then !changes sign if the variable is wavelike
       a = -1d0
    else
       a = 1d0
    end if
-!checks order of the anchor points and sorts with increasing fashion==============
-!to make the integration easier===================================================
-   do i=1,na
-      if (minloc(anchorfile(i:na,1),DIM=1).ne.(i)) then
-          anchors(i,:) = anchorfile(minloc(anchorfile(i:na,1),dim=1),:)
-      else
-          anchors(i,:) = anchorfile(i,:)
-      end if
-   end do
-!finds where the nodes are close to the data and sets the indeces=================
-!that will be used for the integration bounds=====================================
+   anchors = anchorfile
+!finds where the nodes are close to the data and sets the indeces===========
+!that will be used for the integration bounds===============================
    do i=1,na
       do j=2,np+1,2
          if (abs(points(j,1) - anchors(i,1)) <= tiny) then
@@ -81,9 +97,9 @@ module cdkk_mod
    cdkkinter(1) = 1
    cdkkinter(na) = np+1
    counter = 5
-!doubly-subtractive method (similar to mskk.f90 script)===========================
+!doubly-subtractive method (similar to mskk.f90 script)=====================
    do i=1,na-1
-      do j=cdkkinter(i),cdkkinter(i+1)-1 !will only integrate between anchor pnts.
+      do j=cdkkinter(i),cdkkinter(i+1)-1 !integrate between anchor pnts.
          if (j.eq.int(np*counter/100)) then
             call itime(time_count)
             time_count(:) = [time_count(1)-time(1),time_count(2)-time(2), &
@@ -144,9 +160,9 @@ module cdkk_mod
                outer_intprod = outer_intprod * outer_intprod_sub
             end do
             rtemp = (vi*vi - vj*vj)
-            if (abs(rtemp) <= tiny) then
-               write(*,*) 'Division by zero', j,k,rtemp
-            end if
+            !if (abs(rtemp) <= tiny) then
+            !   write(*,*) 'Division by zero', j,k,rtemp
+            !end if
             fj = (rj*vi) / (rtemp * intprod)
             sum = sum + fj
             k = k+2
@@ -168,16 +184,16 @@ module cdkk_mod
       end if
       write(*,2001) time_end(1),time_end(2),time_end(3)
 2001 format('PROCESS COMPLETE.........TIME ELAPSED: ',i2.2,':',i2.2,':',i2.2)
-   deallocate(cdkkinter,anchors)
+   deallocate(cdkkinter,anchors,temp)
    end subroutine cdkk
 
    subroutine reversecdkk(np,na,wave,points,anchorfile,transform)
-!variables from program===========================================================
+!variables from program=====================================================
    implicit none
    integer, intent(in) :: np,na,wave
    double precision, intent(in) :: points(:,:), anchorfile(:,:)
    double precision, intent(out) :: transform(np,2)
-!assumes the chebyshev nodes inputted have been fitted to the data================
+!assumes the chebyshev nodes inputted have been fitted to the data==========
    call itime(time)
    write(*,1000) time(1),time(2),time(3)
 1000 format ( 'PROCESS STARTED AT: ',I2.2,':',I2.2,':',I2.2)
@@ -188,17 +204,9 @@ module cdkk_mod
    else
       a = 1d0
    end if
-!checks order of the anchor points and sorts with increasing fashion==============
-!to make the integration easier===================================================
-   do i=1,na
-      if (minloc(anchorfile(i:na,1),dim=1).ne.(i)) then
-          anchors(i,:) = anchorfile(minloc(anchorfile(i:na,1),dim=1),:)
-      else
-          anchors(i,:) = anchorfile(i,:)
-      end if
-   end do
-!finds where the nodes are close to the data and sets the indeces=================
-!that will be used for the integration bounds=====================================
+   anchors = anchorfile
+!finds where the nodes are close to the data and sets the indeces===========
+!that will be used for the integration bounds===============================
    do i=1,na
       do j=2,np+1,2
          if (abs(points(j,1) - anchors(i,1)) <= tiny) then
@@ -212,9 +220,9 @@ module cdkk_mod
    cdkkinter(1) = 1
    cdkkinter(na) = np+1
    counter = 5
-!doubly-subtractive method (similar to mskk.f90 script)===========================
+!doubly-subtractive method (similar to mskk.f90 script)=====================
    do i=1,na-1
-      do j=cdkkinter(i),cdkkinter(i+1)-1 !will only integrate between anchor pnts.
+      do j=cdkkinter(i),cdkkinter(i+1)-1 !integrate between anchor pnts.
          if (j.eq.int(np*counter/100)) then
             call itime(time_count)
             time_count(:) = [time_count(1)-time(1),time_count(2)-time(2), &
@@ -275,9 +283,9 @@ module cdkk_mod
                outer_intprod = outer_intprod * outer_intprod_sub
             end do
             rtemp = (vi*vi - vj*vj)
-            if (abs(rtemp) <= tiny) then
-               write(*,*) 'Division by zero', j,k,rtemp
-            end if
+            !if (abs(rtemp) <= tiny) then
+            !   write(*,*) 'Division by zero', j,k,rtemp
+            !end if
             fj = (rj) / (rtemp * intprod)
             sum = sum + fj
             k = k+2

@@ -160,7 +160,7 @@ module cdkk_mod
       end if
       write(*,2001) time_end(1),time_end(2),time_end(3)
 2001 format('PROCESS COMPLETE.........TIME ELAPSED: ',i2.2,':',i2.2,':',i2.2)
-   deallocate(cdkkinter,anchors,temp)
+   deallocate(cdkkinter,anchors)
    end subroutine cdkk
 
    subroutine reversecdkk(np,na,wave,points,anchorfile,transform)

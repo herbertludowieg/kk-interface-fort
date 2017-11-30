@@ -85,24 +85,25 @@ except:
     if platform == 'linux' or platform == 'linux2':
         if sys.version[0] == '3':
             print('ERROR in import of methods.*****.so file\n'+ \
-                'Make sure that it is contained in the fortran_scripts\n'+ \
-                'directory. If the file is missing please refer to the\n'+ \
-                'MAKEFILE instructions on the LIN-make file.\n')
-            ask = input('Wish to see the instructions?\n[Y or n] ')
+                'Make sure to run make on the command line to compile\n'+ \
+                'the FORTRAN code. If this is not your default python\n'+ \
+                'type \'make VER=X.X\'. Where, X.X is the python version.\n')
+            ask = 'n'
         elif sys.version[0] == '2':
             print('ERROR in import of methods.so file\n'+ \
-                'Make sure that it is contained in the fortran_scripts\n'+ \
-                'directory. If the file is missing please refer to the\n'+ \
-                'MAKEFILE instructions on the LIN-make file.\n')
-            ask= raw_input('Wish to see the instructions?\n[Y or n] ')
+                'Make sure to run make on the command line to compile\n'+ \
+                'the FORTRAN code. If this is not your default python\n'+ \
+                'type \'make VER=X.X\'. Where, X.X is the python version.\n')
+            ask = 'n'
         if ask == 'Y':
             print(open('LIN-make','r').read())
 
     elif platform == 'win32':
         print('\nERROR in import of methods.pyd file\n'+ \
-            'Make sure that it is contained in the fortran_scripts\n'+ \
-            'directory.If the file is missing please refer to the'+ \
-            'MAKEFILE instructions on the WIN-make file.\n')
+                'Make sure to run make on the command line to compile\n'+ \
+                'the FORTRAN code. If this is not your default python\n'+ \
+                'type \'make VER=X.X\'. Where, X.X is the python version.\n'+ \
+                'For more help refer to the WIN-make instructions.\n')
         if sys.version[0] == '3':
             ask = input('Wish to see instructions?[Y or n] ')
         elif sys.version[0] == '2':

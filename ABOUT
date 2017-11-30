@@ -1,7 +1,7 @@
 
 ----------------------------------------ABOUT----------------------------------------
 Before the program can be run the .f90 files that are found in the fortran_scripts
-directory must be compiled with the Makefile that is found in the directory.
+directory must be compiled with the Makefile in the main directory.
 Instructions on how to do this can be found in the LIN/WIN-make files. LIN stands
 for Linux and WIN for Windows.
 ----REQUIREMENTS LINUX--------------------

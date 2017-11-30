@@ -39,7 +39,7 @@ def search_data(selected_data,exec_btn,lbl_open,check_space,plot_dat_btn,gskk_bt
 	filename = filedialog.askopenfilename(filetypes = (('omega files','.omega'),
 						('lambda files','.lambda'),
 						('txt files','.txt'),
-						('all files','.*')))
+						('all files','*')))
 	if len(filename) > 0:
 		# open file for reading
 		fn = open(filename, 'r')

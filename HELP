@@ -1,10 +1,8 @@
 
 ----------------------------------------HELP----------------------------------------
 
-This is a small help window inteded to help with running the program. If there are
-any errors with the Fortran file imports please refer to the LIN/WIN-make files.
-LIN is for Linux and WIN is for Windows.
-
+This is a small help window inteded to help with running the program.
+ 
 To run the program it will need a data file input upon start-up. Nothing else can be
 done before this. Once the data is selected most of the buttons on the interface
 become available. Executing the program at this point will perform the

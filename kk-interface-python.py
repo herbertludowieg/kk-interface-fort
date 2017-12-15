@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# kk-interface is a program that creates a GUI for the Kramers-Kronig 
+# kk-interface-python is a program that creates a GUI for the Kramers-Kronig 
 # transforms and reverse-transforms for either a frequency-like or 
 # wavelength-like variables using FORTRAN code to perform the transforms.
 #
@@ -26,18 +26,18 @@
 #
 # Copyright (C) 2017 Herbert Ludowieg
 #
-#    kk-interface is free software: you can redistribute it and/or modify
+#    kk-interface-python is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    kk-interface is distributed in the hope that it will be useful,
+#    kk-interface-python is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with kk-interface.  If not, see <http://www.gnu.org/licenses/>.
+#    along with kk-interface-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
 from sys import platform
@@ -73,52 +73,12 @@ if len(sys.argv) > 1:
         else:
             print('ERROR could not recognize OS as Linux or Windows')
         sys.exit()
-    elif sys.argv[1] == '-p':
-        pass
     elif sys.argv[1] != '':
         print('ERROR cannot parse command\nType -h for options')
         sys.exit()
     
-# checks for an error in .so files imports before start-up
-# will stop program if it finds an error
-if len(sys.argv) > 1:
-    if sys.argv[1] == '-p':
-        print("Using python modules")
-        import methods
-else:
-    try:
-        from methods import methods
-        print("Using FORTRAN modules")
-    except:
-        if platform == 'linux' or platform == 'linux2':
-            if sys.version[0] == '3':
-                print('ERROR in import of methods.*****.so file\n'+ \
-                    'Make sure to run make on the command line to compile\n'+ \
-                    'the FORTRAN code. If this is not your default python\n'+ \
-                    'type \'make VER=X.X\'. Where, X.X is the python version.\n')
-                ask = 'n'
-            elif sys.version[0] == '2':
-                print('ERROR in import of methods.so file\n'+ \
-                    'Make sure to run make on the command line to compile\n'+ \
-                    'the FORTRAN code. If this is not your default python\n'+ \
-                    'type \'make VER=X.X\'. Where, X.X is the python version.\n')
-                ask = 'n'
-            if ask == 'Y':
-                print(open('LIN-make','r').read())
-    
-        elif platform == 'win32':
-            print('\nERROR in import of methods.pyd file\n'+ \
-                    'Make sure to run make on the command line to compile\n'+ \
-                    'the FORTRAN code. If this is not your default python\n'+ \
-                    'type \'make VER=X.X\'. Where, X.X is the python version.\n'+ \
-                    'For more help refer to the WIN-make instructions.\n')
-            if sys.version[0] == '3':
-                ask = input('Wish to see instructions?[Y or n] ')
-            elif sys.version[0] == '2':
-                ask= raw_input('Wish to see instructions?\n[Y or n] ')
-            if ask == 'Y':
-                print(open('WIN-make','r').read())
-        sys.exit()
+#import python modules
+import methods
 
 # check the version of python used and adjusts imports accordingly
 if sys.version[0][0] == '3':
@@ -310,7 +270,7 @@ class Search_Data(tk.Frame):
                     'units':'','index':'0','mskk/cdkk':'none'}
 
         self.selected_data['state'] = 'normal'
-        self.selected_data.insert('1.0','kk-interface\n\n'+ \
+        self.selected_data.insert('1.0','kk-interface-python\n\n'+ \
                     'Copyright(C) 2016 Herbert Ludowieg\n\n'+ \
                     'This program comes with ABSOLUTELY\n'+ \
                     'NO WARRANTY; for details look\n'+ \

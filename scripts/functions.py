@@ -6,20 +6,20 @@
 # transform
 # many were adapted and inspired by other programs from Dr. Jochen Autschbach
 #
-#    This file is part of kk-interface
+#    This file is part of kk-interface-python
 #
-#    kk-interface is free software: you can redistribute it and/or modify
+#    kk-interface-python is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    kk-interface is distributed in the hope that it will be useful,
+#    kk-interface-python is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with kk-interface.  If not, see <http://www.gnu.org/licenses/>.
+#    along with kk-interface-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 import sys
 from scripts import settings
@@ -32,11 +32,7 @@ elif sys.version[0][0] == '2':
 	import tkFileDialog as filedialog
 
 import numpy as np
-if len(sys.argv) > 1:
-    if sys.argv[1] == '-p':
-        import methods
-else:
-    from methods import methods 
+import methods
 
 def search_data(selected_data,exec_btn,lbl_open,check_space,plot_dat_btn,gskk_btn,data_log):
 	# open search window

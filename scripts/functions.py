@@ -6,20 +6,20 @@
 # transform
 # many were adapted and inspired by other programs from Dr. Jochen Autschbach
 #
-#    This file is part of kk-interface-fort
+#    This file is part of kk-interface
 #
-#    kk-interface-fort is free software: you can redistribute it and/or modify
+#    kk-interface is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    kk-interface-fort is distributed in the hope that it will be useful,
+#    kk-interface is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with kk-interface-fort.  If not, see <http://www.gnu.org/licenses/>.
+#    along with kk-interface.  If not, see <http://www.gnu.org/licenses/>.
 #
 import sys
 from scripts import settings
@@ -32,7 +32,11 @@ elif sys.version[0][0] == '2':
 	import tkFileDialog as filedialog
 
 import numpy as np
-from fortran_scripts import methods 
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-p':
+        import methods
+else:
+    from methods import methods 
 
 def search_data(selected_data,exec_btn,lbl_open,check_space,plot_dat_btn,gskk_btn,data_log):
 	# open search window
@@ -159,12 +163,12 @@ def main(data_log,method):
 	# it was applied
 	if settings.vardict['real'] == 'Dispersive':
 		if method == 'KK':
-			f = methods.kk_m_trans.kkreversemaclaurin(w,points,length)
+			f = methods.kk_mod.kkreversemaclaurin(w,points,length)
 			text = '>>Reverse Kramers-Kronig transformation '+ \
 				'perfomed on '+filen+w_text+' (taken from '+ \
 				settings.vardict['openf']+')\n'
 		elif method == 'MSKK':
-			f = methods.mskk.reversegskk(length, \
+			f = methods.mskk_mod.reversegskk(length, \
 					int(settings.vardict['numanchor']), \
 					w,points,settings.anchorpoints)
 			text = '>>Reverse Kramers-Kronig transformation with '+ \
@@ -183,12 +187,12 @@ def main(data_log,method):
 				settings.vardict['openf']+')\n'
 	elif settings.vardict['real'] == 'Absorptive':
 		if method == 'KK':
-			f = methods.kk_m_trans.kkmaclaurin(w,points,length)
+			f = methods.kk_mod.kkmaclaurin(w,points,length)
 			text = '>>Kramers-Kronig transformation perfomed on '+ \
 				filen+w_text+' (taken from '+ \
 				settings.vardict['openf']+')\n'
 		elif method == 'MSKK':
-			f = methods.mskk.gskk(length, \
+			f = methods.mskk_mod.gskk(length, \
 				int(settings.vardict['numanchor']), \
 				w,points,settings.anchorpoints)
 			text = '>>Kramers-Kronig transformation with '+ \

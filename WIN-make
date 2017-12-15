@@ -9,12 +9,12 @@ Program will not run Python 3 with Windows.
     MinGW
 ------------------------------------------
 ----MAKEFILE INSTRUCTIONS-----------------
-Before the program can be run the FORTRAN modules on the fortran_scripts directory
+Before the program can be run the FORTRAN modules on the methods directory
 must be compiled. A makefile has been included in the directory to compile all of the
 .f90 files contained in the directory into one file.
 
 To compile the FORTRAN code simply run make on the windows CMD from the programs base 
-directory or the fortran_scripts directory. Python must be listed as a PATH variable 
+directory or the methods directory. Python must be listed as a PATH variable 
 otherwise the code will not be able to compile.
 
 ------------------------------------------

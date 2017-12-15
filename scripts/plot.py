@@ -4,20 +4,20 @@
 # same figure
 # from this window the transfromed data can also be saved
 #
-#    This file is part of kk-interface-fort
+#    This file is part of kk-interface
 #
-#    kk-interface-fort is free software: you can redistribute it and/or modify
+#    kk-interface is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    kk-interface-fort is distributed in the hope that it will be useful,
+#    kk-interface is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with kk-interface-fort.  If not, see <http://www.gnu.org/licenses/>.
+#    along with kk-interface.  If not, see <http://www.gnu.org/licenses/>.
 #
 import sys
 from scripts import settings

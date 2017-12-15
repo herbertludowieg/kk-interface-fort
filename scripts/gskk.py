@@ -8,20 +8,20 @@
 # can also calculate the chebyshev zero-nodes and adjust them for the data that is
 # loaded on the main GUI
 #
-#    This file is part of kk-interface-fort
+#    This file is part of kk-interface
 #
-#    kk-interface-fort is free software: you can redistribute it and/or modify
+#    kk-interface is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    kk-interface-fort is distributed in the hope that it will be useful,
+#    kk-interface is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with kk-interface-fort.  If not, see <http://www.gnu.org/licenses/>.
+#    along with kk-interface.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 if sys.version[0][0] == '2':
@@ -37,7 +37,11 @@ elif sys.version[0][0] == '3':
 import numpy as np
 import math as mt
 from scripts import settings,functions
-from fortran_scripts import methods
+if len(sys.argv) > 1:
+    if sys.argv[1] == '-p':
+        import methods
+else:
+    from methods import methods
 class GSKK:
     def __init__(self,parent,mskk_btn,mskkcdkk):
         self.vardict = settings.vardict

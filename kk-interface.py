@@ -53,7 +53,8 @@ if len(sys.argv) > 1:
                     '-help     opens HELP text\n'+ \
                     '-lice     opens LISENCE for kk-inter.py\n'+ \
                     '-about    opens ABOUT text\n'+ \
-                    '-make     opens make instructions'
+                    '-make     opens make instructions\n'+ \
+                    '-p        run the program with python modules (FORTRAN is default)'
         print(op_text)
         sys.exit()
     elif sys.argv[1] == '-help':
